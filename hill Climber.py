@@ -15,15 +15,15 @@ def mappoints(map, mapper):
                 mapped[j] = map.get(i)
     return mapped
 
-def fitnes(list1, list2, map):
-    list3 = []
-    list1, list2 = mappoints(map, list1), mappoints(map, list2)
-    for i in range(len(list1)):
-        for j in range(len(list2)):
+def fitnes(list1, list2, list3, list4, map):
+    list5 = []
+    list1, list2, list3, list4 = mappoints(map, list1), mappoints(map, list2), mappoints(map, list3), mappoints(map, list4)
+    for i in range(len(list3)):
+        for j in range(len(list4)):
             if i != j:
-                fit = abs(list1[i]-list1[j]) * abs(list2[i]-list2[j])
-                list3.append(fit)
-    return round(min(list3),4)
+                fit = abs(list1[i]-list1[j]) * abs(list2[i]-list2[j]) * abs(list3[i]-list3[j]) * abs(list4[i]-list4[j])
+                list5.append(fit)
+    return round(min(list5),4)
 
 def getNeighbours(currSolution):
     neighbours = []
@@ -45,26 +45,26 @@ def GetNeighbours(currSolution):
         neighbours.append(neighbour)
     return neighbours
 
-def getBestNeighbour(mapper1,neighbours, map):
-    bestFitness = fitnes(mapper1, neighbours[0], map)
+def getBestNeighbour(mapper1, mapper2, mapper3, neighbours, map):
+    bestFitness = fitnes(mapper1, mapper2, mapper3, neighbours[0], map)
     bestNeighbour = neighbours[0]
     for neigh in neighbours:
-        currFitness = fitnes(mapper1, neighbours[0], map)
+        currFitness = fitnes(mapper1, mapper2, mapper3, neighbours[0], map)
         if currFitness > bestFitness:
             bestFitness = currFitness
             bestNeighbour = neigh
     return bestNeighbour, bestFitness
 
-def hillclimbing(mapper1, population, map):
+def hillclimbing(mapper1, mapper2, mapper3, population, map):
     currSolution = randomSolution(population)
-    currFitness = fitnes(mapper1, currSolution[-1], map)
+    currFitness = fitnes(mapper1, mapper2, mapper3, currSolution[-1], map)
     neighbours = getNeighbours(currSolution)
-    bestNeighbour, bestFitness = getBestNeighbour(mapper1, neighbours, map)
-    while bestFitness <= 8.0:
+    bestNeighbour, bestFitness = getBestNeighbour(mapper1, mapper2, mapper3, neighbours, map)
+    while bestFitness <= currFitness:
             currSolution = bestNeighbour
             currFitness = bestFitness
             neighbours = GetNeighbours(currSolution)
-            bestNeighbour, bestFitness = getBestNeighbour(mapper1, neighbours, map)
+            bestNeighbour, bestFitness = getBestNeighbour(mapper1,mapper2, mapper3, neighbours, map)
             print(bestNeighbour, bestFitness)
 
     return bestNeighbour, bestFitness
@@ -80,6 +80,6 @@ mapper = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 mapper2 = [12,10,13,9,15,11,8,14,6,5,7,3,1,4,0,2]
 mapper3 = [12, 10, 8, 13, 14, 0, 3, 15, 11, 7, 6, 1, 5, 2, 4, 9]
 
-maps = [mapper, mapper2]
+maps = [mapper, mapper2, mapper3]
 
-print(hillclimbing(mapper, maps, map))
+print(hillclimbing(mapper, mapper2, mapper3, maps, map))
